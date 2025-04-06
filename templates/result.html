@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your MBTI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Your MBTI Type is:</h2>
+        <h1>{{ mbti }}</h1>
+
+        <div class="personality-description">
+            <h3>What does this mean?</h3>
+            <p>{{ personality_descriptions[mbti] }}</p>
+        </div>
+
+        <p>
+            <a href="{{ url_for('feedback') }}">Provide Feedback</a>
+        </p>
+
+    </div>
+</body>
+</html>
