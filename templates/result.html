@@ -1,23 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Your MBTI</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#050505">
+    <title>{{ mbti }} — TYPE/15</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body>
-    <div class="container">
-        <h2>Your MBTI Type is:</h2>
-        <h1>{{ mbti }}</h1>
+    <main class="result-hero">
+        <section class="result-main" data-reveal>
+            <div>
+                <a class="brand" href="{{ url_for('index') }}">
+                    <span class="brand-mark">+</span>
+                    <span>TYPE / 15</span>
+                </a>
+            </div>
 
-        <div class="personality-description">
-            <h3>What does this mean?</h3>
-            <p>{{ personality_descriptions[mbti] }}</p>
-        </div>
+            <div>
+                <p class="eyebrow">RESULT / PERSONALITY INDEX</p>
+                <p class="result-type" aria-label="Your result is {{ mbti }}">{{ mbti }}</p>
+                <p class="result-label">YOUR FOUR-LETTER PREFERENCE TYPE</p>
+                <p class="result-description">{{ personality_descriptions[mbti] }}</p>
+            </div>
 
-        <p>
-            <a href="{{ url_for('feedback') }}">Provide Feedback</a>
-        </p>
+            <span class="result-label">NOT A CLINICAL OR PSYCHOLOGICAL DIAGNOSIS / FOR SELF-REFLECTION ONLY</span>
+        </section>
 
-    </div>
+        <aside class="result-aside" data-reveal>
+            <div class="question-meta">
+                <strong>TYPE BREAKDOWN</strong>
+                <span>04 SIGNALS</span>
+            </div>
+
+            <div class="letter-stack">
+                <div class="letter-row">
+                    <b>{{ mbti[0] }}</b>
+                    <span>ENERGY / {% if mbti[0] == 'E' %}EXTRAVERSION{% else %}INTROVERSION{% endif %}</span>
+                </div>
+                <div class="letter-row">
+                    <b>{{ mbti[1] }}</b>
+                    <span>INFORMATION / {% if mbti[1] == 'S' %}SENSING{% else %}INTUITION{% endif %}</span>
+                </div>
+                <div class="letter-row">
+                    <b>{{ mbti[2] }}</b>
+                    <span>DECISIONS / {% if mbti[2] == 'T' %}THINKING{% else %}FEELING{% endif %}</span>
+                </div>
+                <div class="letter-row">
+                    <b>{{ mbti[3] }}</b>
+                    <span>STRUCTURE / {% if mbti[3] == 'J' %}JUDGING{% else %}PERCEIVING{% endif %}</span>
+                </div>
+            </div>
+
+            <div class="result-actions">
+                <a class="primary-action" href="{{ url_for('quiz') }}">RETAKE TEST <span>↗</span></a>
+                <a class="secondary-action" href="{{ url_for('feedback') }}">LEAVE FEEDBACK <span>↗</span></a>
+            </div>
+        </aside>
+    </main>
 </body>
 </html>
