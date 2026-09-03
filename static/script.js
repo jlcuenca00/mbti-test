@@ -124,7 +124,10 @@
 
         if (index === total - 1) {
           submitButton?.classList.add('is-visible');
-          submitButton?.focus({ preventScroll: true });
+          advanceTimer = window.setTimeout(() => {
+            if (typeof form.requestSubmit === 'function') form.requestSubmit();
+            else form.submit();
+          }, reducedMotion ? 0 : 360);
           return;
         }
 
