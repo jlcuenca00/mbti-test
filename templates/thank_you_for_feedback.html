@@ -1,16 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Thank You for Your Feedback</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#050505">
+    <title>Received — TYPE/15</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
-<body>
-    <div class="container">
-        <h2>Thank You for Your Feedback {{ name }}!</h2>
-        <p>Your feedback is important to us and will help improve the experience.</p>
-        <a href="{{ url_for('index') }}">
-            <button>Take the Quiz Again</button>
-        </a>
-    </div>
+<body class="thanks-page">
+    <main class="thanks-shell" data-reveal>
+        <section class="thanks-intro">
+            <a class="brand" href="{{ url_for('index') }}">
+                <span class="brand-mark">+</span>
+                <span>TYPE / 15</span>
+            </a>
+
+            <div>
+                <p class="eyebrow">SIGNAL RECEIVED / {{ name|upper }}</p>
+                <h1>MESSAGE<br><span>RECEIVED.</span></h1>
+                <p class="thanks-copy">Thanks, {{ name }}. Your feedback has been recorded for this session.</p>
+            </div>
+
+            <a class="primary-action" href="{{ url_for('index') }}">RETURN TO START <span>↗</span></a>
+        </section>
+    </main>
 </body>
 </html>
