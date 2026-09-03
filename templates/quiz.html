@@ -1,23 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Quiz</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#050505">
+    <title>TYPE/15 — Assessment</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
-<body>
-    <div class="container">
-        <h1>Answer the Questions</h1>
-        <form method="POST">
-            {% for i, q in questions %}
-    <div class="question">
-        <p><strong>Q{{ i+1 }}:</strong> {{ q.q }}</p>
-        <label><input type="radio" name="q{{ i }}" value="{{ q.a[0] }}" required> {{ q.a[1] }}</label>
-        <label><input type="radio" name="q{{ i }}" value="{{ q.b[0] }}"> {{ q.b[1] }}</label>
-    </div>
-{% endfor %}
+<body class="quiz-page">
+    <div class="quiz-progress-track" aria-hidden="true"><div class="quiz-progress-fill" data-progress-fill></div></div>
 
-            <input type="submit" value="See Result">
-        </form>
+    <div class="quiz-wrap">
+        <header class="quiz-header">
+            <a class="brand" href="{{ url_for('index') }}">
+                <span class="brand-mark">+</span>
+                <span>TYPE / 15</span>
+            </a>
+            <span data-current-question>QUESTION 01</span>
+            <span>CHOOSE WHAT FEELS NATURAL</span>
+        </header>
+
+        <main class="quiz-stage">
+            <aside class="quiz-rail">
+                <span class="quiz-counter" data-quiz-counter>01 / 15</span>
+                <span class="quiz-hint">A / B · 1 / 2 · ARROW KEYS</span>
+            </aside>
+
+            <form class="quiz-content" method="POST" data-quiz-form>
+                {% for i, q in questions %}
+                <section class="quiz-question" data-question-index="{{ i }}" aria-hidden="false">
+                    <div class="question-meta">
+                        <strong>{{ "%02d"|format(i + 1) }} / 15</strong>
+                        <span>DIMENSION / {{ q.dimension }}</span>
+                    </div>
+
+                    <div class="question-copy" tabindex="-1">
+                        <h1>{{ q.q }}</h1>
+                    </div>
+
+                    <div class="option-grid">
+                        <label class="option-card">
+                            <input type="radio" name="q{{ i }}" value="{{ q.a[0] }}" required>
+                            <span class="option-key">A / {{ q.a[0] }}</span>
+                            <span class="option-text">{{ q.a[1] }}</span>
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="q{{ i }}" value="{{ q.b[0] }}">
+                            <span class="option-key">B / {{ q.b[0] }}</span>
+                            <span class="option-text">{{ q.b[1] }}</span>
+                        </label>
+                    </div>
+                </section>
+                {% endfor %}
+
+                <div class="quiz-controls">
+                    <button class="ghost-button" type="button" data-prev-question>← PREVIOUS QUESTION</button>
+                    <button class="primary-action quiz-submit" type="submit" data-submit-quiz>REVEAL MY TYPE <span>↗</span></button>
+                </div>
+            </form>
+        </main>
     </div>
 </body>
 </html>
