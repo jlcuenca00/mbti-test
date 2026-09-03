@@ -1,68 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#050505">
-    <meta name="description" content="A 15-question MBTI personality test built with Flask.">
-    <title>TYPE/15 — MBTI Test</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body>
-    <div class="site-shell">
-        <header class="site-header">
-            <a class="brand" href="{{ url_for('index') }}" aria-label="TYPE 15 home">
-                <span class="brand-mark">+</span>
-                <span>TYPE / 15</span>
-            </a>
-            <div class="header-meta">
-                <span>MBTI / FOUR AXES</span>
-                <strong>15 QUESTIONS</strong>
+{% extends "base.html" %}
+
+{% block title %}Fourfold — Meet the way your mind moves{% endblock %}
+{% block body_class %}home-page{% endblock %}
+
+{% block body %}
+<div class="page-shell">
+    <header class="site-nav" data-reveal>
+        <a class="brand" href="{{ url_for('index') }}" aria-label="Fourfold home">
+            <span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span>fourfold</span>
+        </a>
+        <p>Personality, in four directions</p>
+        <a class="nav-start" href="{{ url_for('quiz') }}">Begin <span aria-hidden="true">→</span></a>
+    </header>
+
+    <main>
+        <section class="home-hero">
+            <div class="hero-copy" data-reveal>
+                <p class="overline"><span>01</span> A SMALL TEST ABOUT YOUR NATURAL PREFERENCES</p>
+                <h1>Meet the way<br>your mind <em>moves.</em></h1>
+                <div class="hero-bottom">
+                    <p>Fifteen everyday choices reveal how you gather energy, notice information, make decisions, and move through the world.</p>
+                    <a class="button button-primary" href="{{ url_for('quiz') }}">
+                        <span>Start the test</span>
+                        <span class="button-orb" aria-hidden="true">↗</span>
+                    </a>
+                </div>
             </div>
-        </header>
 
-        <main>
-            <section class="hero">
-                <div class="hero-copy" data-reveal>
-                    <p class="eyebrow">PERSONALITY INDEX / SESSION 01</p>
-                    <h1 class="hero-title">
-                        <span>KNOW</span>
-                        <span class="outline">THE</span>
-                        <span class="signal">TYPE.</span>
-                    </h1>
+            <div class="fold-figure" data-reveal aria-label="Four personality directions: energy, information, decisions, and approach">
+                <div class="fold-card fold-energy"><span>E</span><small>energy</small><span>I</span></div>
+                <div class="fold-card fold-information"><span>S</span><small>information</small><span>N</span></div>
+                <div class="fold-card fold-decisions"><span>T</span><small>decisions</small><span>F</span></div>
+                <div class="fold-card fold-approach"><span>J</span><small>approach</small><span>P</span></div>
+                <div class="fold-center" aria-hidden="true">you</div>
+            </div>
+        </section>
 
-                    <div class="hero-deck">
-                        <p>Fifteen binary choices. Four personality dimensions. One result assembled from the way you decide, recharge, observe, and organize.</p>
-                        <a class="primary-action" href="{{ url_for('quiz') }}">BEGIN TEST <span>↗</span></a>
-                    </div>
-                </div>
+        <section class="home-method" data-reveal>
+            <div class="method-heading">
+                <p class="overline"><span>02</span> HOW IT WORKS</p>
+                <h2>No right answers.<br>Just your <em>first instinct.</em></h2>
+            </div>
+            <div class="method-steps">
+                <article><span>01</span><h3>Choose honestly</h3><p>Pick what feels more natural—not what sounds more impressive.</p></article>
+                <article><span>02</span><h3>Follow the rhythm</h3><p>Each answer moves you forward. The whole test takes about two minutes.</p></article>
+                <article><span>03</span><h3>Read your balance</h3><p>Get a four-letter preference and see how close each pair actually was.</p></article>
+            </div>
+        </section>
 
-                <aside class="hero-aside" data-reveal>
-                    <div class="type-orbit" aria-hidden="true">
-                        <div class="orbit-core">MBTI</div>
-                        <span class="orbit-label">ENERGY / E— I</span>
-                        <span class="orbit-label">INFORMATION / S — N</span>
-                        <span class="orbit-label">DECISIONS / T — F</span>
-                        <span class="orbit-label">STRUCTURE / J — P</span>
-                    </div>
-                    <div class="dimension-grid" aria-label="MBTI dimensions">
-                        <span><b>E / I</b><br>ENERGY</span>
-                        <span><b>S / N</b><br>INFORMATION</span>
-                        <span><b>T / F</b><br>DECISIONS</span>
-                        <span><b>J / P</b><br>STRUCTURE</span>
-                    </div>
-                </aside>
-            </section>
-
-            <section class="section-strip" data-reveal>
-                <div class="strip-index">01 / METHOD</div>
-                <div class="strip-copy">
-                    <h2>FAST QUESTIONS.<br>NO MYSTICISM.</h2>
-                    <p>This is a lightweight personality quiz, not a clinical assessment. Pick the answer that feels more natural, then let the four preference pairs form your result.</p>
-                </div>
-            </section>
-        </main>
-    </div>
-</body>
-</html>
+        <section class="home-note" data-reveal>
+            <p>This is a lightweight tool for self-reflection, not a clinical or psychological diagnosis.</p>
+            <a href="{{ url_for('quiz') }}">I’m ready <span aria-hidden="true">→</span></a>
+        </section>
+    </main>
+</div>
+{% endblock %}

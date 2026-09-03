@@ -2,9 +2,7 @@
   document.documentElement.classList.add('js');
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  // Lightweight reveal system.
   const revealNodes = [...document.querySelectorAll('[data-reveal]')];
   if (reducedMotion || !('IntersectionObserver' in window)) {
     revealNodes.forEach((node) => node.classList.add('is-visible'));
@@ -15,118 +13,146 @@
         entry.target.classList.add('is-visible');
         observer.unobserve(entry.target);
       });
-    }, { threshold: 0.16 });
+    }, { threshold: 0.12 });
     revealNodes.forEach((node) => observer.observe(node));
   }
 
-  // Custom crosshair cursor for desktop only.
-  if (finePointer && !reducedMotion) {
-    const cursor = document.createElement('div');
-    cursor.className = 'fx-cursor';
-    cursor.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(cursor);
+  const copyButton = document.querySelector('[data-copy-result]');
+  const toast = document.querySelector('[data-toast]');
 
-    let x = innerWidth / 2;
-    let y = innerHeight / 2;
-    let tx = x;
-    let ty = y;
+  copyButton?.addEventListener('click', async () => {
+    const result = copyButton.dataset.result;
+    const copy = `My Fourfold result is ${result}. Take the test: ${window.location.origin}`;
 
-    const loop = () => {
-      x += (tx - x) * 0.28;
-      y += (ty - y) * 0.28;
-      cursor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-      requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
+    try {
+      await navigator.clipboard.writeText(copy);
+    } catch {
+      const field = document.createElement('textarea');
+      field.value = copy;
+      field.setAttribute('readonly', '');
+      field.style.position = 'fixed';
+      field.style.opacity = '0';
+      document.body.appendChild(field);
+      field.select();
+      document.execCommand('copy');
+      field.remove();
+    }
 
-    addEventListener('pointermove', (event) => {
-      tx = event.clientX;
-      ty = event.clientY;
-      cursor.style.opacity = '1';
-      const interactive = event.target.closest('a, button, label, input, textarea');
-      cursor.classList.toggle('is-active', Boolean(interactive));
-    }, { passive: true });
+    copyButton.firstChild.textContent = 'Copied ';
+    toast?.classList.add('is-visible');
+    window.setTimeout(() => {
+      copyButton.firstChild.textContent = 'Copy result ';
+      toast?.classList.remove('is-visible');
+    }, 2200);
+  });
 
-    document.documentElement.addEventListener('mouseleave', () => {
-      cursor.style.opacity = '0';
-    });
-  }
-
-  // Progressive, single-question quiz experience. Backend POST contract stays unchanged.
   const form = document.querySelector('[data-quiz-form]');
   if (!form) return;
 
   const questions = [...form.querySelectorAll('.quiz-question')];
   const total = questions.length;
-  const progress = document.querySelector('[data-progress-fill]');
-  const counter = document.querySelector('[data-quiz-counter]');
+  const progressFill = document.querySelector('[data-progress-fill]');
   const currentLabel = document.querySelector('[data-current-question]');
   const previousButton = document.querySelector('[data-prev-question]');
   const submitButton = document.querySelector('[data-submit-quiz]');
+  const exitButton = document.querySelector('[data-exit-test]');
+  const exitDialog = document.querySelector('[data-exit-dialog]');
+  const closeDialogButtons = [...document.querySelectorAll('[data-close-dialog]')];
+  const exitAnyway = exitDialog?.querySelector('a');
+  const storageKey = 'fourfold-quiz-progress';
+  const tones = ['#a79ee8', '#ee977f', '#91c8ad', '#8eb8d2'];
   let current = 0;
-  let advanceTimer = null;
+  let advanceTimer;
 
-  const update = () => {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(storageKey) || '{}');
+    Object.entries(saved.answers || {}).forEach(([name, value]) => {
+      const input = form.querySelector(`input[name="${CSS.escape(name)}"][value="${CSS.escape(value)}"]`);
+      if (input) input.checked = true;
+    });
+    current = Math.min(Math.max(Number(saved.current) || 0, 0), total - 1);
+  } catch {
+    sessionStorage.removeItem(storageKey);
+  }
+
+  const saveProgress = () => {
+    const answers = {};
+    new FormData(form).forEach((value, key) => { answers[key] = value; });
+    sessionStorage.setItem(storageKey, JSON.stringify({ current, answers }));
+  };
+
+  const syncChoices = (question) => {
+    question.querySelectorAll('.choice').forEach((choice) => {
+      const input = choice.querySelector('input');
+      choice.classList.toggle('is-selected', Boolean(input?.checked));
+    });
+  };
+
+  const renderQuestion = ({ focus = false } = {}) => {
+    document.documentElement.style.setProperty('--quiz-accent', tones[current % tones.length]);
     questions.forEach((question, index) => {
-      const active = index === current;
-      question.hidden = !active;
-      question.setAttribute('aria-hidden', String(!active));
+      const isActive = index === current;
+      question.hidden = !isActive;
+      question.setAttribute('aria-hidden', String(!isActive));
+      question.classList.toggle('is-active', isActive);
+      if (isActive) syncChoices(question);
     });
 
     const shown = current + 1;
-    if (counter) counter.textContent = `${String(shown).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
-    if (currentLabel) currentLabel.textContent = `QUESTION ${String(shown).padStart(2, '0')}`;
-    if (progress) progress.style.width = `${(shown / total) * 100}%`;
-    if (previousButton) previousButton.style.visibility = current === 0 ? 'hidden' : 'visible';
+    if (currentLabel) currentLabel.textContent = String(shown).padStart(2, '0');
+    if (progressFill) progressFill.style.width = `${(shown / total) * 100}%`;
+    if (previousButton) previousButton.disabled = current === 0;
 
-    const selected = questions[current]?.querySelector('input[type="radio"]:checked');
-    if (submitButton) {
-      submitButton.classList.toggle('is-visible', current === total - 1 && Boolean(selected));
-    }
+    const currentAnswered = Boolean(questions[current]?.querySelector('input:checked'));
+    submitButton?.classList.toggle('is-visible', current === total - 1 && currentAnswered);
+
+    saveProgress();
+    if (focus) questions[current]?.querySelector('h1')?.focus({ preventScroll: true });
   };
 
-  const go = (index) => {
-    current = Math.max(0, Math.min(total - 1, index));
-    update();
-    questions[current]?.querySelector('.question-copy')?.focus?.({ preventScroll: true });
+  const goTo = (index, options = {}) => {
+    window.clearTimeout(advanceTimer);
+    current = Math.min(Math.max(index, 0), total - 1);
+    renderQuestion(options);
   };
 
   questions.forEach((question, index) => {
-    const options = [...question.querySelectorAll('.option-card')];
-    options.forEach((option) => {
-      const input = option.querySelector('input[type="radio"]');
-      if (!input) return;
-
-      const sync = () => {
-        options.forEach((item) => item.classList.toggle('is-selected', item.querySelector('input')?.checked));
-        if (submitButton) {
-          submitButton.classList.toggle('is-visible', index === total - 1 && Boolean(question.querySelector('input:checked')));
-        }
-      };
-
+    question.querySelectorAll('input[type="radio"]').forEach((input) => {
       input.addEventListener('change', () => {
-        sync();
-        clearTimeout(advanceTimer);
-        if (index < total - 1) {
-          advanceTimer = setTimeout(() => go(index + 1), reducedMotion ? 0 : 240);
+        syncChoices(question);
+        saveProgress();
+
+        if (index === total - 1) {
+          submitButton?.classList.add('is-visible');
+          submitButton?.focus({ preventScroll: true });
+          return;
         }
+
+        advanceTimer = window.setTimeout(
+          () => goTo(index + 1, { focus: true }),
+          reducedMotion ? 0 : 360,
+        );
       });
-      sync();
     });
   });
 
-  previousButton?.addEventListener('click', () => go(current - 1));
+  previousButton?.addEventListener('click', () => goTo(current - 1, { focus: true }));
+  form.addEventListener('submit', () => sessionStorage.removeItem(storageKey));
 
-  addEventListener('keydown', (event) => {
-    if (event.metaKey || event.ctrlKey || event.altKey) return;
-    const activeQuestion = questions[current];
-    if (!activeQuestion) return;
-    const inputs = [...activeQuestion.querySelectorAll('input[type="radio"]')];
-
+  window.addEventListener('keydown', (event) => {
+    if (exitDialog?.open || event.metaKey || event.ctrlKey || event.altKey) return;
     const key = event.key.toLowerCase();
-    let target = null;
-    if (key === 'a' || key === '1' || key === 'arrowleft') target = inputs[0];
-    if (key === 'b' || key === '2' || key === 'arrowright') target = inputs[1];
+
+    if ((key === 'backspace' || key === 'arrowup') && current > 0) {
+      event.preventDefault();
+      goTo(current - 1, { focus: true });
+      return;
+    }
+
+    const options = [...questions[current].querySelectorAll('input[type="radio"]')];
+    let target;
+    if (key === 'a' || key === '1' || key === 'arrowleft') target = options[0];
+    if (key === 'b' || key === '2' || key === 'arrowright') target = options[1];
     if (!target) return;
 
     event.preventDefault();
@@ -134,5 +160,12 @@
     target.dispatchEvent(new Event('change', { bubbles: true }));
   });
 
-  update();
+  exitButton?.addEventListener('click', () => exitDialog?.showModal());
+  closeDialogButtons.forEach((button) => button.addEventListener('click', () => exitDialog?.close()));
+  exitDialog?.addEventListener('click', (event) => {
+    if (event.target === exitDialog) exitDialog.close();
+  });
+  exitAnyway?.addEventListener('click', () => sessionStorage.removeItem(storageKey));
+
+  renderQuestion();
 })();

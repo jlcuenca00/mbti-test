@@ -1,45 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#050505">
-    <title>Feedback — TYPE/15</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body class="form-page">
-    <main class="form-shell" data-reveal>
-        <section class="form-intro">
-            <a class="brand" href="{{ url_for('index') }}">
-                <span class="brand-mark">+</span>
-                <span>TYPE / 15</span>
-            </a>
-            <div>
-                <p class="eyebrow">FEEDBACK / OPEN CHANNEL</p>
-                <h1>TELL ME<br>WHAT <span>HIT.</span></h1>
-            </div>
-            <p class="result-label">SHORT, DIRECT, USEFUL.</p>
-        </section>
+{% extends "base.html" %}
 
-        <form class="form-panel" method="POST" action="{{ url_for('feedback') }}">
-            <div class="question-meta">
-                <strong>02 FIELDS</strong>
-                <span>YOUR INPUT</span>
-            </div>
+{% block title %}Feedback — Fourfold{% endblock %}
+{% block body_class %}feedback-page{% endblock %}
 
-            <div class="field">
-                <label for="name">01 / YOUR NAME</label>
-                <input type="text" name="name" id="name" autocomplete="name" placeholder="Type your name" required>
-            </div>
-
-            <div class="field">
-                <label for="message">02 / YOUR MESSAGE</label>
-                <textarea name="message" id="message" placeholder="What worked? What felt off?" required></textarea>
-            </div>
-
-            <button class="primary-action" type="submit">SEND FEEDBACK <span>↗</span></button>
+{% block body %}
+<main class="feedback-shell">
+    <header class="site-nav" data-reveal>
+        <a class="brand" href="{{ url_for('index') }}"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>fourfold</span></a>
+        <p>Open note</p><a class="nav-start" href="{{ url_for('index') }}">Close <span aria-hidden="true">×</span></a>
+    </header>
+    <div class="feedback-layout">
+        <section class="feedback-intro" data-reveal><p class="overline"><span>FEEDBACK</span> SHORT, HONEST, USEFUL</p><h1>What felt<br><em>true?</em></h1><p>Tell me what worked, what felt off, or what you would change about the test.</p></section>
+        <form class="feedback-form" method="POST" action="{{ url_for('feedback') }}" data-reveal>
+            <label><span>Your name</span><input type="text" name="name" autocomplete="name" placeholder="How should I address you?" required></label>
+            <label><span>Your note</span><textarea name="message" placeholder="Write as much or as little as you need." required></textarea></label>
+            <button class="button button-primary" type="submit"><span>Send the note</span><span class="button-orb">↗</span></button>
         </form>
-    </main>
-</body>
-</html>
+    </div>
+</main>
+{% endblock %}

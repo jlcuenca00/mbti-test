@@ -1,29 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#050505">
-    <title>Received — TYPE/15</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body class="thanks-page">
-    <main class="thanks-shell" data-reveal>
-        <section class="thanks-intro">
-            <a class="brand" href="{{ url_for('index') }}">
-                <span class="brand-mark">+</span>
-                <span>TYPE / 15</span>
-            </a>
+{% extends "base.html" %}
 
-            <div>
-                <p class="eyebrow">SIGNAL RECEIVED / {{ name|upper }}</p>
-                <h1>MESSAGE<br><span>RECEIVED.</span></h1>
-                <p class="thanks-copy">Thanks, {{ name }}. Your feedback has been recorded for this session.</p>
-            </div>
+{% block title %}Thank you — Fourfold{% endblock %}
+{% block body_class %}thanks-page{% endblock %}
 
-            <a class="primary-action" href="{{ url_for('index') }}">RETURN TO START <span>↗</span></a>
-        </section>
-    </main>
-</body>
-</html>
+{% block body %}
+<main class="thanks-shell" data-reveal>
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>fourfold</span></a>
+    <div class="thanks-mark" aria-hidden="true"><span>✓</span></div>
+    <section><p class="overline">NOTE RECEIVED</p><h1>Thank you,<br><em>{{ name }}.</em></h1><p>Your feedback has been recorded for this session.</p><a class="button button-primary" href="{{ url_for('index') }}"><span>Back to the beginning</span><span class="button-orb">→</span></a></section>
+</main>
+{% endblock %}

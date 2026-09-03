@@ -1,63 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#050505">
-    <title>{{ mbti }} — TYPE/15</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body>
-    <main class="result-hero">
-        <section class="result-main" data-reveal>
-            <div>
-                <a class="brand" href="{{ url_for('index') }}">
-                    <span class="brand-mark">+</span>
-                    <span>TYPE / 15</span>
-                </a>
-            </div>
+{% extends "base.html" %}
 
-            <div>
-                <p class="eyebrow">RESULT / PERSONALITY INDEX</p>
-                <p class="result-type" aria-label="Your result is {{ mbti }}">{{ mbti }}</p>
-                <p class="result-label">YOUR FOUR-LETTER PREFERENCE TYPE</p>
-                <p class="result-description">{{ personality_descriptions[mbti] }}</p>
-            </div>
+{% block title %}{{ mbti }} · {{ profile.title }} — Fourfold{% endblock %}
+{% block body_class %}result-page{% endblock %}
 
-            <span class="result-label">NOT A CLINICAL OR PSYCHOLOGICAL DIAGNOSIS / FOR SELF-REFLECTION ONLY</span>
+{% block body %}
+<div class="result-shell">
+    <header class="site-nav result-nav" data-reveal>
+        <a class="brand" href="{{ url_for('index') }}"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>fourfold</span></a>
+        <p>Your result</p>
+        <button class="nav-start" type="button" data-copy-result data-result="{{ mbti }} — {{ profile.title }}">Copy result <span aria-hidden="true">↗</span></button>
+    </header>
+
+    <main>
+        <section class="result-hero" data-reveal>
+            <div class="result-intro">
+                <p class="overline"><span>YOUR TYPE</span> FOUR PREFERENCES, ONE PATTERN</p>
+                <p class="result-kicker">You read as</p>
+                <h1 aria-label="{{ mbti }}">{% for letter in mbti %}<span>{{ letter }}</span>{% endfor %}</h1>
+                <h2>{{ profile.title }}</h2>
+            </div>
+            <div class="result-summary"><p>{{ profile.description }}</p><ul aria-label="Key traits">{% for trait in profile.traits %}<li>{{ trait }}</li>{% endfor %}</ul></div>
         </section>
 
-        <aside class="result-aside" data-reveal>
-            <div class="question-meta">
-                <strong>TYPE BREAKDOWN</strong>
-                <span>04 SIGNALS</span>
+        <section class="balance-section" data-reveal>
+            <div class="section-heading">
+                <p class="overline"><span>THE BALANCE</span> NOT EVERY LETTER IS A LANDSLIDE</p>
+                <h2>See the lean,<br>not just the label.</h2>
+                <p>Your type is built from four pairs. A close split can describe you better than the final letter alone.</p>
             </div>
+            <div class="dimension-list">
+                {% for dimension in dimensions %}
+                <article class="dimension-row" style="--balance: {{ dimension.left_percent }}%; --row-delay: {{ loop.index0 * 90 }}ms">
+                    <header><span>0{{ loop.index }}</span><h3>{{ dimension.label }}</h3><strong>{{ dimension.selected }}</strong></header>
+                    <div class="balance-labels"><span><b>{{ dimension.left_percent }}%</b> {{ dimension.left_name }}</span><span>{{ dimension.right_name }} <b>{{ dimension.right_percent }}%</b></span></div>
+                    <div class="balance-bar" role="img" aria-label="{{ dimension.left_percent }} percent {{ dimension.left_name }}, {{ dimension.right_percent }} percent {{ dimension.right_name }}"><i></i><span style="left: {{ dimension.left_percent }}%"></span></div>
+                    <p>{{ dimension.insight }}</p>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
 
-            <div class="letter-stack">
-                <div class="letter-row">
-                    <b>{{ mbti[0] }}</b>
-                    <span>ENERGY / {% if mbti[0] == 'E' %}EXTRAVERSION{% else %}INTROVERSION{% endif %}</span>
-                </div>
-                <div class="letter-row">
-                    <b>{{ mbti[1] }}</b>
-                    <span>INFORMATION / {% if mbti[1] == 'S' %}SENSING{% else %}INTUITION{% endif %}</span>
-                </div>
-                <div class="letter-row">
-                    <b>{{ mbti[2] }}</b>
-                    <span>DECISIONS / {% if mbti[2] == 'T' %}THINKING{% else %}FEELING{% endif %}</span>
-                </div>
-                <div class="letter-row">
-                    <b>{{ mbti[3] }}</b>
-                    <span>STRUCTURE / {% if mbti[3] == 'J' %}JUDGING{% else %}PERCEIVING{% endif %}</span>
-                </div>
-            </div>
-
-            <div class="result-actions">
-                <a class="primary-action" href="{{ url_for('quiz') }}">RETAKE TEST <span>↗</span></a>
-                <a class="secondary-action" href="{{ url_for('feedback') }}">LEAVE FEEDBACK <span>↗</span></a>
-            </div>
-        </aside>
+        <section class="result-close" data-reveal>
+            <div><p class="overline">ONE LAST THING</p><h2>A mirror,<br>not a box.</h2></div>
+            <div><p>Personality is contextual and can shift over time. Keep what helps you notice your patterns; leave what doesn’t fit.</p><div class="result-actions"><a class="button button-primary" href="{{ url_for('quiz') }}"><span>Retake the test</span><span class="button-orb">↻</span></a><a class="button button-soft" href="{{ url_for('feedback') }}">Share feedback <span>→</span></a></div></div>
+        </section>
     </main>
-</body>
-</html>
+    <footer class="site-footer"><span>Fourfold / 15 questions</span><span>For reflection, not diagnosis</span></footer>
+</div>
+<div class="toast" role="status" aria-live="polite" data-toast>Result copied to clipboard</div>
+{% endblock %}

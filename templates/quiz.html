@@ -1,65 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#050505">
-    <title>TYPE/15 — Assessment</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>
-<body class="quiz-page">
-    <div class="quiz-progress-track" aria-hidden="true"><div class="quiz-progress-fill" data-progress-fill></div></div>
+{% extends "base.html" %}
 
-    <div class="quiz-wrap">
-        <header class="quiz-header">
-            <a class="brand" href="{{ url_for('index') }}">
-                <span class="brand-mark">+</span>
-                <span>TYPE / 15</span>
-            </a>
-            <span data-current-question>QUESTION 01</span>
-            <span>CHOOSE WHAT FEELS NATURAL</span>
-        </header>
+{% block title %}The test — Fourfold{% endblock %}
+{% block body_class %}quiz-page{% endblock %}
 
-        <main class="quiz-stage">
-            <aside class="quiz-rail">
-                <span class="quiz-counter" data-quiz-counter>01 / 15</span>
-                <span class="quiz-hint">A / B · 1 / 2 · ARROW KEYS</span>
-            </aside>
+{% block body %}
+<main class="quiz-shell">
+    <header class="quiz-nav">
+        <a class="brand" href="{{ url_for('index') }}" aria-label="Leave the test and return home">
+            <span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span>fourfold</span>
+        </a>
+        <div class="quiz-progress" aria-label="Test progress">
+            <span data-current-question>01</span><div class="progress-track" aria-hidden="true"><i data-progress-fill></i></div><span>{{ "%02d"|format(total) }}</span>
+        </div>
+        <button class="quiet-button" type="button" data-exit-test>Exit test</button>
+    </header>
 
-            <form class="quiz-content" method="POST" data-quiz-form>
-                {% for i, q in questions %}
-                <section class="quiz-question" data-question-index="{{ i }}" aria-hidden="false">
-                    <div class="question-meta">
-                        <strong>{{ "%02d"|format(i + 1) }} / 15</strong>
-                        <span>DIMENSION / {{ q.dimension }}</span>
-                    </div>
+    <form class="quiz-form" method="POST" data-quiz-form data-total="{{ total }}">
+        {% for i, q in questions %}
+        <section class="quiz-question" data-question-index="{{ i }}" aria-hidden="true">
+            <div class="question-heading">
+                <p class="question-number">Question {{ "%02d"|format(i + 1) }}</p>
+                <h1 tabindex="-1">{{ q.q }}</h1>
+                <p class="question-prompt">Which feels more like you?</p>
+            </div>
+            <div class="choice-list">
+                <label class="choice choice-a">
+                    <input type="radio" name="q{{ i }}" value="{{ q.a[0] }}" required>
+                    <span class="choice-key">A</span><span class="choice-copy">{{ q.a[1] }}</span><span class="choice-mark" aria-hidden="true"><i></i></span>
+                </label>
+                <label class="choice choice-b">
+                    <input type="radio" name="q{{ i }}" value="{{ q.b[0] }}">
+                    <span class="choice-key">B</span><span class="choice-copy">{{ q.b[1] }}</span><span class="choice-mark" aria-hidden="true"><i></i></span>
+                </label>
+            </div>
+        </section>
+        {% endfor %}
 
-                    <div class="question-copy" tabindex="-1">
-                        <h1>{{ q.q }}</h1>
-                    </div>
+        <footer class="quiz-footer">
+            <button class="back-button" type="button" data-prev-question><span aria-hidden="true">←</span> Previous</button>
+            <p><kbd>A</kbd> <kbd>B</kbd> or arrow keys to choose</p>
+            <button class="finish-button" type="submit" data-submit-quiz>See my result <span aria-hidden="true">→</span></button>
+        </footer>
+    </form>
+</main>
 
-                    <div class="option-grid">
-                        <label class="option-card">
-                            <input type="radio" name="q{{ i }}" value="{{ q.a[0] }}" required>
-                            <span class="option-key">A / {{ q.a[0] }}</span>
-                            <span class="option-text">{{ q.a[1] }}</span>
-                        </label>
-                        <label class="option-card">
-                            <input type="radio" name="q{{ i }}" value="{{ q.b[0] }}">
-                            <span class="option-key">B / {{ q.b[0] }}</span>
-                            <span class="option-text">{{ q.b[1] }}</span>
-                        </label>
-                    </div>
-                </section>
-                {% endfor %}
-
-                <div class="quiz-controls">
-                    <button class="ghost-button" type="button" data-prev-question>← PREVIOUS QUESTION</button>
-                    <button class="primary-action quiz-submit" type="submit" data-submit-quiz>REVEAL MY TYPE <span>↗</span></button>
-                </div>
-            </form>
-        </main>
-    </div>
-</body>
-</html>
+<dialog class="exit-dialog" data-exit-dialog>
+    <button class="dialog-close" type="button" data-close-dialog aria-label="Close">×</button>
+    <p class="overline">LEAVE THE TEST?</p>
+    <h2>Your answers won’t be saved.</h2>
+    <div><button class="button button-soft" type="button" data-close-dialog>Keep going</button><a class="text-link" href="{{ url_for('index') }}">Exit anyway →</a></div>
+</dialog>
+{% endblock %}
