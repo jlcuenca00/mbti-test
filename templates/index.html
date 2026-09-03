@@ -1,14 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>MBTI Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#050505">
+    <meta name="description" content="A 15-question MBTI personality test built with Flask.">
+    <title>TYPE/15 — MBTI Test</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body>
-    <div class="container">
-        <h1>MBTI Personality Quiz</h1>
-        <p>Take this 15-question quiz to find your personality type!</p>
-        <a href="{{ url_for('quiz') }}"><button>Start Quiz</button></a>
+    <div class="site-shell">
+        <header class="site-header">
+            <a class="brand" href="{{ url_for('index') }}" aria-label="TYPE 15 home">
+                <span class="brand-mark">+</span>
+                <span>TYPE / 15</span>
+            </a>
+            <div class="header-meta">
+                <span>MBTI / FOUR AXES</span>
+                <strong>15 QUESTIONS</strong>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero">
+                <div class="hero-copy" data-reveal>
+                    <p class="eyebrow">PERSONALITY INDEX / SESSION 01</p>
+                    <h1 class="hero-title">
+                        <span>KNOW</span>
+                        <span class="outline">THE</span>
+                        <span class="signal">TYPE.</span>
+                    </h1>
+
+                    <div class="hero-deck">
+                        <p>Fifteen binary choices. Four personality dimensions. One result assembled from the way you decide, recharge, observe, and organize.</p>
+                        <a class="primary-action" href="{{ url_for('quiz') }}">BEGIN TEST <span>↗</span></a>
+                    </div>
+                </div>
+
+                <aside class="hero-aside" data-reveal>
+                    <div class="type-orbit" aria-hidden="true">
+                        <div class="orbit-core">MBTI</div>
+                        <span class="orbit-label">ENERGY / E— I</span>
+                        <span class="orbit-label">INFORMATION / S — N</span>
+                        <span class="orbit-label">DECISIONS / T — F</span>
+                        <span class="orbit-label">STRUCTURE / J — P</span>
+                    </div>
+                    <div class="dimension-grid" aria-label="MBTI dimensions">
+                        <span><b>E / I</b><br>ENERGY</span>
+                        <span><b>S / N</b><br>INFORMATION</span>
+                        <span><b>T / F</b><br>DECISIONS</span>
+                        <span><b>J / P</b><br>STRUCTURE</span>
+                    </div>
+                </aside>
+            </section>
+
+            <section class="section-strip" data-reveal>
+                <div class="strip-index">01 / METHOD</div>
+                <div class="strip-copy">
+                    <h2>FAST QUESTIONS.<br>NO MYSTICISM.</h2>
+                    <p>This is a lightweight personality quiz, not a clinical assessment. Pick the answer that feels more natural, then let the four preference pairs form your result.</p>
+                </div>
+            </section>
+        </main>
     </div>
 </body>
 </html>
